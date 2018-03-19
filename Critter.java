@@ -55,14 +55,16 @@ public abstract class Critter {
 	}
 	
 	protected final void run(int direction) {
-		//walkHelper(direction)
+		walkHelper(direction);
+		walkHelper(direction)
+		energy -= Params.run_energy_cost;
 	}
 	
 	protected final void reproduce(Critter offspring, int direction) {
 	}
 
 	public abstract void doTimeStep();
-	public abstract boolean fight(String oponent);
+	public abstract boolean fight(String opponent);
 	
 	/**
 	 * create and initialize a Critter subclass.
@@ -189,6 +191,43 @@ public abstract class Critter {
 		for (Critter c : population) {
 			c.doTimeStep();
 		}
+
+        Critter[][] world = new Critter[Params.world_height][Params.world_width]; // 2D array of chars representing the world
+        for (int row = 0; row < world.length; row++) {
+            for (int col = 0; col < world[row].length; col++) {
+                world[row][col] = null; // initialize world with null critters
+            }
+        }
+        for(Critter c : population) {
+            if(world[c.y_coord][c.x_coord] == null) {
+                world[c.y_coord][c.x_coord] = c;
+            } else {
+                Critter otherCritter = world[c.y_coord][c.x_coord]
+                boolean fightC = c.fight(otherCritter.toString());
+                boolean fightOther = otherCritter.fight(c.toString());
+                if((c.energy > 0) && (otherCritter.energy > 0)) {
+                    if((c.x_coord == otherCritter.x_coord) && (c.y_coord == otherCritter.y_coord)) {
+                        //we reach here only if both Critters are in the same place and both alive
+                        int cValue = 0;
+                        int otherValue = 0;
+                        if(fightC) {
+                            cValue = getRandomInt(c.energy);
+                        }
+                        if(fightOther) {
+                            otherValue = getRandomInt(otherCritter.energy);
+                        }
+
+                        if(cValue >= otherValue) {
+                            c.energy += (otherCritter.energy)/2;
+                            otherCritter.energy = 0;
+                            world[c.y_coord][c.x_coord] = c;
+                        }
+                    }
+                }
+            }
+        }
+
+
 		for (int idx = population.size() - 1; idx >= 0; idx--) {
 			population.get(idx).energy -= Params.rest_energy_cost;
 			if (population.get(idx).energy <= 0) { // if Critter is out of energy, remove it from the collection

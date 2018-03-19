@@ -42,16 +42,7 @@ public class Main {
      * and the second is test (for test output, where all output to be directed to a String), or nothing.
      */
     public static void main(String[] args) { 
-    	try {
-    		Critter.makeCritter("assignment4.Craig");
-    		Critter.makeCritter("assignment4.Craig");
-    		Critter.makeCritter("assignment4.Craig");
-    		Critter.displayWorld();
-    		Critter.worldTimeStep();
-    		Critter.displayWorld();
-    	} catch (InvalidCritterException e) {
-    		System.exit(0);
-    	}
+
     	
         if (args.length != 0) {
             try {
@@ -79,11 +70,49 @@ public class Main {
         }
 
         /* Do not alter the code above for your submission. */
-        /* Write your code below. */
+        boolean running = true;
+
+        try {
+
+            for(int i = 0; i < 100; i++) {
+                Critter.makeCritter("assignment4.Algae");
+            }
+            for(int i = 0; i < 25; i++) {
+                Critter.makeCritter("assignment4.Craig");;
+            }
+
+        } catch (InvalidCritterException e) {
+            System.exit(0);
+        }
+
+        while(running) {
+           System.out.print("critters>");
+           String cmd = kb.nextLine();
+           Scanner command = new Scanner(cmd).useDelimiter("\\s+");
+           String s = command.next();
+           switch(s){
+               case "quit":
+                   Critter.clearWorld();
+                   running = false;
+                   break;
+               case "show":
+                   Critter.displayWorld();
+                   break;
+               case "step":
+                   int count = 1;
+                   if(command.hasNextInt()) {
+                       count = command.nextInt();
+                   }
+                   for(int i = 0; i < count; i++) {
+                       Critter.worldTimeStep();
+                   }
+                   break;
+
+           }
+        }
         
         // System.out.println("GLHF");
-        
-        /* Write your code above */
+
         System.out.flush();
     }
 }
