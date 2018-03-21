@@ -1,5 +1,3 @@
-//DELETE THIS COMMENT
-
 package assignment4;
 /* CRITTERS Critter.java
  * EE422C Project 4 submission by

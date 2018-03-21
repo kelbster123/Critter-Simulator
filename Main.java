@@ -90,7 +90,7 @@ public class Main {
            String cmd = kb.nextLine();
            Scanner command = new Scanner(cmd).useDelimiter("\\s+");
            String s = command.next();
-           switch(s){ // cases for user input
+           switch(s){
                case "quit":
                    Critter.clearWorld();
                    running = false;
