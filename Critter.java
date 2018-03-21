@@ -56,11 +56,20 @@ public abstract class Critter {
 	
 	protected final void run(int direction) {
 		walkHelper(direction);
-		walkHelper(direction)
+		walkHelper(direction);
 		energy -= Params.run_energy_cost;
 	}
 	
 	protected final void reproduce(Critter offspring, int direction) {
+		if (energy >= Params.min_reproduce_energy) {
+			offspring.energy = energy/2; // split energy between offspring and parent
+			energy = (int)Math.ceil(energy/2.0);
+			offspring.x_coord = x_coord; // set offspring coordinates to parent coordinates
+			offspring.y_coord = y_coord;
+			offspring.energy += Params.walk_energy_cost; // give offspring energy for a free walk
+			offspring.walk(direction); // walk offspring so it is adjacent to parent
+			babies.add(offspring);
+		}
 	}
 
 	public abstract void doTimeStep();
@@ -198,30 +207,38 @@ public abstract class Critter {
                 world[row][col] = null; // initialize world with null critters
             }
         }
-        for(Critter c : population) {
-            if(world[c.y_coord][c.x_coord] == null) {
+        
+        for (Critter c : population) { // check for collisions between Critters
+            if (world[c.y_coord][c.x_coord] == null) {
                 world[c.y_coord][c.x_coord] = c;
             } else {
-                Critter otherCritter = world[c.y_coord][c.x_coord]
+                Critter otherCritter = world[c.y_coord][c.x_coord];
                 boolean fightC = c.fight(otherCritter.toString());
                 boolean fightOther = otherCritter.fight(c.toString());
-                if((c.energy > 0) && (otherCritter.energy > 0)) {
-                    if((c.x_coord == otherCritter.x_coord) && (c.y_coord == otherCritter.y_coord)) {
+                if ((c.x_coord == otherCritter.x_coord) && (c.y_coord == otherCritter.y_coord)) { // if neither Critter ran away
+                    if ((c.energy > 0) && (otherCritter.energy > 0)) {
                         //we reach here only if both Critters are in the same place and both alive
                         int cValue = 0;
                         int otherValue = 0;
-                        if(fightC) {
+                        if (fightC) {
                             cValue = getRandomInt(c.energy);
                         }
-                        if(fightOther) {
+                        if (fightOther) {
                             otherValue = getRandomInt(otherCritter.energy);
                         }
-
-                        if(cValue >= otherValue) {
+                        
+                        if (cValue >= otherValue) { // if Critter c wins fight or if tie
                             c.energy += (otherCritter.energy)/2;
                             otherCritter.energy = 0;
                             world[c.y_coord][c.x_coord] = c;
+                        } else { // other Critter wins
+                        	otherCritter.energy += c.energy/2;
+                        	c.energy = 0;
                         }
+                    } else if (c.energy > 0) { // if other Critter dead but Critter c alive
+                    	world[c.y_coord][c.x_coord] = c;
+                    } else if ((c.energy <= 0) && (otherCritter.energy <= 0)) { // if both Critters dead
+                    	world[c.y_coord][c.x_coord] = null;
                     }
                 }
             }
@@ -234,6 +251,17 @@ public abstract class Critter {
 				population.remove(idx);
 			}
 		}
+		
+		population.addAll(babies); // put offspring into world
+		babies.clear();
+		
+		for (int count = 0; count < Params.refresh_algae_count; count++) {
+			Critter newCritter = new Algae();
+			newCritter.energy = Params.start_energy;
+			newCritter.x_coord = getRandomInt(Params.world_width);
+			newCritter.y_coord = getRandomInt(Params.world_height);
+			population.add(newCritter);
+		}		
 	}
 	
 	public static void displayWorld() {

@@ -107,7 +107,11 @@ public class Main {
                        Critter.worldTimeStep();
                    }
                    break;
-
+               case "seed":
+            	   if (command.hasNextInt()) {
+	            	   int seed = command.nextInt();
+	            	   Critter.setSeed(seed);
+            	   }
            }
         }
         
