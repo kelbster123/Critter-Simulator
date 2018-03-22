@@ -1,19 +1,17 @@
-//DELETE COMMENT
-
 package assignment4;
 /* CRITTERS Critter.java
  * EE422C Project 4 submission by
  * Varun Prabhu
- * <Student1 EID>
- * <Student1 5-digit Unique No.>
+ * vp6793
+ * 15465
  * Kelby Erickson
- * <Student2 EID>
- * <Student2 5-digit Unique No.>
- * Slip days used: <0>
- * Fall 2016
+ * kde528
+ * 15495
+ * Spring 2018
  */
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 /* see the PDF for descriptions of the methods and fields in this class
@@ -124,13 +122,13 @@ public abstract class Critter {
 	 */
 	public static void makeCritter(String critter_class_name) throws InvalidCritterException {
 		try {
-			Class<?> c = Class.forName(myPackage + critter_class_name);
+			Class<?> c = Class.forName(myPackage + "." + critter_class_name);
 			Critter newCritter = (Critter) c.newInstance();
 			newCritter.energy = Params.start_energy;
 			newCritter.x_coord = getRandomInt(Params.world_width);
 			newCritter.y_coord = getRandomInt(Params.world_height);
 			population.add(newCritter);
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoClassDefFoundError e) {
 			throw new InvalidCritterException(critter_class_name);
 		}
 	}
@@ -143,19 +141,17 @@ public abstract class Critter {
 	 */
 	public static List<Critter> getInstances(String critter_class_name) throws InvalidCritterException {
 		try {
-			Class<?> critterClass = Class.forName(myPackage + critter_class_name);
-			Critter newCritter = (Critter) critterClass.newInstance();
-			List<Critter> result = new java.util.ArrayList<Critter>();
+			Class<?> critterClass = Class.forName(myPackage + "." + critter_class_name);
+			List<Critter> result = new ArrayList<Critter>();
 			for(Critter c : population) {
-				if(newCritter instanceof c.getClass()) {
-
+				if (critterClass.isInstance(c)) {
+					result.add(c);
 				}
 			}
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+			return result;
+		} catch (ClassNotFoundException e) {
 			throw new InvalidCritterException(critter_class_name);
 		}
-	
-		return result;
 	}
 	
 	/**

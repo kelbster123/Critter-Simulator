@@ -1,17 +1,13 @@
-//DELETE COMMENT
-
 package assignment4;
 /* CRITTERS Main.java
  * EE422C Project 4 submission by
- * Replace <...> with your actual data.
- * <Student1 Name>
- * <Student1 EID>
- * <Student1 5-digit Unique No.>
- * <Student2 Name>
- * <Student2 EID>
- * <Student2 5-digit Unique No.>
- * Slip days used: <0>
- * Fall 2016
+ * Varun Prabhu
+ * vp6793
+ * 15465
+ * Kelby Erickson
+ * kde528
+ * 15495
+ * Spring 2018
  */
 
 import java.util.List;
@@ -74,29 +70,17 @@ public class Main {
 
         /* Do not alter the code above for your submission. */
         boolean running = true;
-
-        try {
-
-            for(int i = 0; i < 100; i++) {
-                Critter.makeCritter("assignment4.Algae");
-            }
-            for(int i = 0; i < 25; i++) {
-                Critter.makeCritter("assignment4.Craig");;
-            }
-
-        } catch (InvalidCritterException e) {
-            System.exit(0);
-        }
-
+              
         while(running) {
            System.out.print("critters>");
            String cmd = kb.nextLine();
-           Scanner command = new Scanner(cmd).useDelimiter("\\s+");
+           Scanner command = new Scanner(cmd);
+           command.useDelimiter("\\s+");
            String s = command.next();
            try {
                switch(s){
                    case "quit":
-                       if(command.hasNext()) {
+                       if (command.hasNext()) {
                            throw new Exception();
                        }
                        Critter.clearWorld();
@@ -104,7 +88,7 @@ public class Main {
                        break;
 
                    case "show":
-                       if(command.hasNext()) {
+                       if (command.hasNext()) {
                            throw new Exception();
                        }
                        Critter.displayWorld();
@@ -112,13 +96,13 @@ public class Main {
 
                    case "step":
                        int count = 1;
-                       if(command.hasNextInt()) {
+                       if (command.hasNextInt()) {
                            count = command.nextInt();
                        }
-                       if(command.hasNext()) {
+                       if (command.hasNext()) {
                            throw new Exception();
                        }
-                       for(int i = 0; i < count; i++) {
+                       for (int i = 0; i < count; i++) {
                            Critter.worldTimeStep();
                        }
                        break;
@@ -134,7 +118,11 @@ public class Main {
                        break;
 
                    case "make":
+                	   if (!command.hasNext()) {
+                		   throw new Exception();
+                	   }
                        String critter = command.next();
+                       
                        int crittersToMake = 1;
                        if(command.hasNextInt()) {
                            crittersToMake = command.nextInt();
@@ -149,18 +137,23 @@ public class Main {
                        break;
 
                    case "stats":
-                       String c = command.next();
-                       List<Critter> listOfCritters = Critter.getInstances(c);
-                       Class<?> classType = Class.forName(myPackage + c);
-                       classType.runStats(listOfCritters);
+                	   if (!command.hasNext()) {
+                		   throw new Exception();
+                	   }
+                	   String c = command.next();
+                	   if(command.hasNext()) {
+                           throw new Exception();
+                       }
+                	   List<Critter> listOfCritters = Critter.getInstances(c);                	   
+                	   Class<?> classType = Class.forName(myPackage + "." + c);
+                	   classType.getMethod("runStats", List.class).invoke(null, listOfCritters);
+                	   break;
 
                    default:
                        System.out.println("invalid command: " + cmd);
-                       break;
-
                }
            }
-           catch (Exception e) {
+           catch (Exception | NoClassDefFoundError e) {
                System.out.println("error processing: " + cmd);
            }
 
