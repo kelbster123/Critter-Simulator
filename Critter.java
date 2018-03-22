@@ -50,16 +50,51 @@ public abstract class Critter {
 	
 	private int x_coord;
 	private int y_coord;
+	private int moveCount = 0;
+	private static boolean doingEcounters = false;
 	
 	protected final void walk(int direction) {
-		walkHelper(direction);		
+		if (moveCount == 0) {
+			if((!doingEcounters) || (checkOkToMove(direction, 1))) {
+				walkHelper(direction);
+			}
+		}
 		energy -= Params.walk_energy_cost;
+		moveCount++;
 	}
+
 	
 	protected final void run(int direction) {
-		walkHelper(direction);
-		walkHelper(direction);
+		if(moveCount == 0) {
+			if((!doingEcounters) || (checkOkToMove(direction, 2))) {
+				walkHelper(direction);
+				walkHelper(direction);
+			}
+		}
 		energy -= Params.run_energy_cost;
+		moveCount++;
+	}
+
+	private boolean checkOkToMove(int direction, int steps) {
+		int xValue = x_coord;
+		int yValue = y_coord;
+
+		for(int count = 0; count < steps; count++) {
+			walkHelper(direction);
+		}
+
+		for (Critter c : population) {
+			if (!c.equals(this)) {
+				if((c.x_coord == x_coord) && (c.y_coord == y_coord)) {
+					x_coord = xValue;
+					y_coord = yValue;
+					return false;
+				}
+			}
+		}
+		x_coord = xValue;
+		y_coord = yValue;
+		return true;
 	}
 	
 	protected final void reproduce(Critter offspring, int direction) {
@@ -89,7 +124,7 @@ public abstract class Critter {
 	 */
 	public static void makeCritter(String critter_class_name) throws InvalidCritterException {
 		try {
-			Class<?> c = Class.forName(critter_class_name);
+			Class<?> c = Class.forName(myPackage + critter_class_name);
 			Critter newCritter = (Critter) c.newInstance();
 			newCritter.energy = Params.start_energy;
 			newCritter.x_coord = getRandomInt(Params.world_width);
@@ -107,7 +142,18 @@ public abstract class Critter {
 	 * @throws InvalidCritterException
 	 */
 	public static List<Critter> getInstances(String critter_class_name) throws InvalidCritterException {
-		List<Critter> result = new java.util.ArrayList<Critter>();
+		try {
+			Class<?> critterClass = Class.forName(myPackage + critter_class_name);
+			Critter newCritter = (Critter) critterClass.newInstance();
+			List<Critter> result = new java.util.ArrayList<Critter>();
+			for(Critter c : population) {
+				if(newCritter instanceof c.getClass()) {
+
+				}
+			}
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+			throw new InvalidCritterException(critter_class_name);
+		}
 	
 		return result;
 	}
@@ -203,6 +249,8 @@ public abstract class Critter {
 			c.doTimeStep();
 		}
 
+		doingEcounters = true;
+
         Critter[][] world = new Critter[Params.world_height][Params.world_width]; // 2D array of chars representing the world
         for (int row = 0; row < world.length; row++) {
             for (int col = 0; col < world[row].length; col++) {
@@ -246,6 +294,8 @@ public abstract class Critter {
             }
         }
 
+        doingEcounters = false;
+
 
 		for (int idx = population.size() - 1; idx >= 0; idx--) {
 			population.get(idx).energy -= Params.rest_energy_cost;
@@ -263,7 +313,11 @@ public abstract class Critter {
 			newCritter.x_coord = getRandomInt(Params.world_width);
 			newCritter.y_coord = getRandomInt(Params.world_height);
 			population.add(newCritter);
-		}		
+		}
+
+		for (Critter c : population) {
+			c.moveCount = 0;
+		}
 	}
 	
 	public static void displayWorld() {

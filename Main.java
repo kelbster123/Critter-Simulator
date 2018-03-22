@@ -14,6 +14,7 @@ package assignment4;
  * Fall 2016
  */
 
+import java.util.List;
 import java.util.Scanner;
 import java.io.*;
 
@@ -92,29 +93,77 @@ public class Main {
            String cmd = kb.nextLine();
            Scanner command = new Scanner(cmd).useDelimiter("\\s+");
            String s = command.next();
-           switch(s){
-               case "quit":
-                   Critter.clearWorld();
-                   running = false;
-                   break;
-               case "show":
-                   Critter.displayWorld();
-                   break;
-               case "step":
-                   int count = 1;
-                   if(command.hasNextInt()) {
-                       count = command.nextInt();
-                   }
-                   for(int i = 0; i < count; i++) {
-                       Critter.worldTimeStep();
-                   }
-                   break;
-               case "seed":
-            	   if (command.hasNextInt()) {
-	            	   int seed = command.nextInt();
-	            	   Critter.setSeed(seed);
-            	   }
+           try {
+               switch(s){
+                   case "quit":
+                       if(command.hasNext()) {
+                           throw new Exception();
+                       }
+                       Critter.clearWorld();
+                       running = false;
+                       break;
+
+                   case "show":
+                       if(command.hasNext()) {
+                           throw new Exception();
+                       }
+                       Critter.displayWorld();
+                       break;
+
+                   case "step":
+                       int count = 1;
+                       if(command.hasNextInt()) {
+                           count = command.nextInt();
+                       }
+                       if(command.hasNext()) {
+                           throw new Exception();
+                       }
+                       for(int i = 0; i < count; i++) {
+                           Critter.worldTimeStep();
+                       }
+                       break;
+
+                   case "seed":
+                       if (command.hasNextInt()) {
+                           int seed = command.nextInt();
+                           if(command.hasNext()) {
+                               throw new Exception();
+                           }
+                           Critter.setSeed(seed);
+                       }
+                       break;
+
+                   case "make":
+                       String critter = command.next();
+                       int crittersToMake = 1;
+                       if(command.hasNextInt()) {
+                           crittersToMake = command.nextInt();
+                       }
+                       if(command.hasNext()) {
+                           throw new Exception();
+                       }
+
+                       for(int numCreated = 0; numCreated < crittersToMake; numCreated++) {
+                            Critter.makeCritter(critter);
+                       }
+                       break;
+
+                   case "stats":
+                       String c = command.next();
+                       List<Critter> listOfCritters = Critter.getInstances(c);
+                       Class<?> classType = Class.forName(myPackage + c);
+                       classType.runStats(listOfCritters);
+
+                   default:
+                       System.out.println("invalid command: " + cmd);
+                       break;
+
+               }
            }
+           catch (Exception e) {
+               System.out.println("error processing: " + cmd);
+           }
+
         }
         
         // System.out.println("GLHF");
