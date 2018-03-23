@@ -37,12 +37,10 @@ public class Main {
 
     /**
      * Main method.
-     * @param args args can be empty.  If not empty, provide two parameters -- the first is a file name, 
+     * @param args args can be empty. If not empty, provide two parameters -- the first is a file name, 
      * and the second is test (for test output, where all output to be directed to a String), or nothing.
      */
-    public static void main(String[] args) { 
-
-    	
+    public static void main(String[] args) {     	
         if (args.length != 0) {
             try {
                 inputFile = args[0];
@@ -71,14 +69,14 @@ public class Main {
         /* Do not alter the code above for your submission. */
         boolean running = true;
               
-        while(running) {
+        while(running) { // while user has not entered "quit"
            System.out.print("critters>");
            String cmd = kb.nextLine();
            Scanner command = new Scanner(cmd);
            command.useDelimiter("\\s+");
            String s = command.next();
            try {
-               switch(s){
+               switch(s){ // perform operation that corresponds to user input
                    case "quit":
                        if (command.hasNext()) {
                            throw new Exception();
@@ -153,13 +151,11 @@ public class Main {
                        System.out.println("invalid command: " + cmd);
                }
            }
-           catch (Exception | NoClassDefFoundError e) {
+           catch (Exception | NoClassDefFoundError e) { // catch any exceptions and the error that results from using the lowercase version of a valid Critter name
                System.out.println("error processing: " + cmd);
            }
 
         }
-        
-        // System.out.println("GLHF");
 
         System.out.flush();
     }

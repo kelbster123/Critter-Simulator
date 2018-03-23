@@ -10,7 +10,6 @@ package assignment4;
  * Spring 2018
  */
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +17,6 @@ import java.util.List;
  * you may add fields, methods or inner classes to Critter ONLY if you make your additions private
  * no new public, protected or default-package code or data can be added to Critter
  */
-
 
 public abstract class Critter {
 	private static String myPackage;
@@ -35,6 +33,10 @@ public abstract class Critter {
 		return rand.nextInt(max);
 	}
 	
+	/**
+	 * This method sets the seed for the random number generator.
+	 * @param new_seed is the seed
+	 */
 	public static void setSeed(long new_seed) {
 		rand = new java.util.Random(new_seed);
 	}
@@ -51,6 +53,10 @@ public abstract class Critter {
 	private int moveCount = 0;
 	private static boolean doingEcounters = false;
 	
+	/**
+	 * This method performs a single walk in the given direction.
+	 * @param direction is the direction to walk
+	 */
 	protected final void walk(int direction) {
 		if (moveCount == 0) {
 			if((!doingEcounters) || (checkOkToMove(direction, 1))) {
@@ -61,7 +67,10 @@ public abstract class Critter {
 		moveCount++;
 	}
 
-	
+	/**
+	 * This method performs a single run in the given direction.
+	 * @param direction is the direction to run
+	 */
 	protected final void run(int direction) {
 		if(moveCount == 0) {
 			if((!doingEcounters) || (checkOkToMove(direction, 2))) {
@@ -72,7 +81,13 @@ public abstract class Critter {
 		energy -= Params.run_energy_cost;
 		moveCount++;
 	}
-
+	
+	/**
+	 * This method checks whether the Critter can move without encountering another Critter.
+	 * @param direction is the direction the Critter wants to move in
+	 * @param steps is the number of spaces by which the Critter wants to move
+	 * @return true if the Critter can move without encountering another Critter, false otherwise
+	 */
 	private boolean checkOkToMove(int direction, int steps) {
 		int xValue = x_coord;
 		int yValue = y_coord;
@@ -95,6 +110,11 @@ public abstract class Critter {
 		return true;
 	}
 	
+	/**
+	 * This method performs the reproduction process for a Critter.
+	 * @param offspring is the baby Critter being produced
+	 * @param direction indicates where the baby will be placed relative to the parent
+	 */
 	protected final void reproduce(Critter offspring, int direction) {
 		if (energy >= Params.min_reproduce_energy) {
 			offspring.energy = energy/2; // split energy between offspring and parent
@@ -316,6 +336,9 @@ public abstract class Critter {
 		}
 	}
 	
+	/**
+	 * This method displays the world on the console.
+	 */
 	public static void displayWorld() {
 		String[][] world = new String[Params.world_height][Params.world_width]; // 2D array of chars representing the world
 		for (int row = 0; row < world.length; row++) {
